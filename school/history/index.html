@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Colonization Game</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vex-js/2.3.2/js/vex.combined.min.js"></script>
+	<script>vex.defaultOptions.className = 'vex-theme-os';</script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vex-js/2.3.2/css/vex.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vex-js/2.3.2/css/vex-theme-os.min.css" />
+
+	<script src="variables.js"></script>
+	<script src="main.js"></script>
+</head>
+<body style="background-image: url('background.png'); background-size: cover; padding-top: 100px;">
+	<div id="mainNav" class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<div class="navbar-brand">America Colonization</div>
+			</div>
+			<div class="navbar-collapse collapse" id="navbar-main">
+				<ul class="nav navbar-nav">
+					<li><a href="#" style="font-weight: bold">Player <span id="currentPlayer">1</span>'s turn</a></li>
+
+					<li style="visibility: hidden; width:30px;">0</li>
+
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" id="scores" href="#">Scores <span class="caret"></span></a>
+						<ul class="dropdown-menu" aria-labelledby="scores">
+							<li id="score1li"><a href="#" id="score1box">Player 1: <span id="score1">error</span> gold</a></li>
+							<li id="score2li"><a href="#" id="score2box">Player 2: <span id="score2">error</span> gold</a></li>
+							<li id="score3li"><a href="#" id="score3box">Player 3: <span id="score3">error</span> gold</a></li>
+							<li id="score4li"><a href="#" id="score4box">Player 4: <span id="score4">error</span> gold</a></li>
+							<li id="score5li"><a href="#" id="score5box">Player 5: <span id="score5">error</span> gold</a></li>
+							<li id="score6li"><a href="#" id="score6box">Player 6: <span id="score6">error</span> gold</a></li>
+							<li class="divider"></li>
+							<li><a href="javascript:rankings();">Ranking</a></li>
+						</ul>
+					</li>
+
+					<li><a href="#" data-toggle="modal" data-target="#rulesDialog">Rules</a></li>
+					<li><a href="#" data-toggle="modal" data-target="#rulesDialog">Help</a></li>
+				</ul>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li id="Player1btn">
+						<a href="javascript:endGame();" style="line-height: -1px">
+							<button class="btn btn-danger" id="btnEnd">End Game</button>
+						</a>
+					</li>
+					
+				</ul>
+
+			</div>
+		</div>
+	</div>
+
+	<div id="mainContent" class="jumbotron" style="width:75%; height: 500px; margin-left: auto; margin-right: auto; border-radius: 25px">
+		<div style="width:95%; margin-left: auto; margin-right: auto; display:none;" id="contentQuestion">
+			<h4>Question worth <span id="questionWorth"></span> gold</h4>
+			<h6 id="question"></h6>
+			<br>
+			<a id="ans1btn" href="javascript:click(1);" class="btn btn-primary">A. <span id="ans1"></span></a>
+			<br>
+			<br>
+			<a id="ans2btn" href="javascript:click(2);" class="btn btn-primary">B. <span id="ans2"></span></a>
+			<br>
+			<br>
+			<a id="ans3btn" href="javascript:click(3);" class="btn btn-primary">C. <span id="ans3"></span></a>
+			<br>
+			<br>
+			<a id="ans4btn" href="javascript:click(4);" class="btn btn-primary">D. <span id="ans4"></span></a>
+		</div>
+
+    <div style="width:95%; margin-left: auto; margin-right: auto; display:none;" id="contentAttack">
+      <h4>Does your move place your ship in the same square as another ship?</h4>
+      <h6>If so, you will be forced to attack the other player</h6>
+      <br>
+      <a id="attackNo" href="javascript:attack(0);" class="btn btn-default">No, not in same square</a>
+      <span style="visibility: hidden; width:200px">000000</span>
+      <a id="attackYes" href="javascript:attack(1);" class="btn btn-danger">Yes, attack!</a>
+    </div>
+
+    <div style="width:95%; margin-left: auto; margin-right: auto; display:none;" id="contentNewWorld">
+      <h4>Have you reached the New World yet?</h4>
+      <h6>If so, you will be out of the game</h6>
+      <br>
+      <a id="attackNo" href="javascript:newWorld(0);" class="btn btn-default">No</a>
+      <span style="visibility: hidden; width:200px">0000</span>
+      <a id="attackYes" href="javascript:newWorld(1);" class="btn btn-success">Yes</a>
+    </div>
+
+    <div style="width:95%; margin-left: auto; margin-right: auto; display:none;" id="contentAttackCalc">
+      <h4>Attack</h4>
+      <h6>Fill this form for attack. The amount of gold spent has a partial impact on the chance of winning. </h6>
+      <br>
+      <div class="form-group">
+        <input type="text" class="form-control" id="goldSpend" placeholder="How much gold do you want to spend on this attack?">
+      </div>
+      <div class="form-group">
+        <label for="attackingPlayer">Who are you attacking?</label>
+        <select class="form-control" id="attackingPlayer">
+          <option>Player 1</option>
+          <option>Player 2</option>
+          <option>Player 3</option>
+          <option>Player 4</option>
+          <option>Player 5</option>
+          <option>Player 6</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" id="opponentGoldSpend" placeholder="How much gold does the opponent want to spend on this attack?">
+      </div>
+      <br>
+      <a style="float:right;" id="attackConfirm" href="javascript:confirmAttack();" class="btn btn-danger">Confirm Attack<span class="glyphicon glyphicon-screenshot"></span></a>
+      <span style="visibility: hidden">00000</span>
+      <a style="float:right;" id="attackCancel" href="javascript:attack(0);" class="btn btn-default">Cancel</a>
+    </div>
+  </div>
+
+  <div id="rulesDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+     <div class="modal-content">
+      <div class="modal-body">
+       <h3 class="modal-title">Game Rules</h3>
+       <hr>
+       <p id="rulesText">
+        rules
+      </p>
+    </div>
+    <div class="modal-footer">
+     <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+   </div>
+ </div>
+
+</div>
+</div>
+</body>
+</html>
