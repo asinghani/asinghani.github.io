@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+<!-- Load the MobileNet model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+
+    </head>
+    <body>
+        <video id="video" width="640" height="480" autoplay></video>
+        <p id="data"></p>
+    <script>
+
+        function classifyAndNext(model) {
+            model.detect(video).then(pred => {
+                console.log('Predictions: ');
+                console.log(pred);
+
+
+                document.getElementById("data").innerHTML = pred.map(x => x.class)
+
+            /*document.getElementById("data").innerHTML = 
+                pred[0].className + " " + (pred[0].probability * 100).toFixed(1) + "<br>" +
+                pred[1].className + " " + (pred[1].probability * 100).toFixed(1) + "<br>" + 
+                pred[2].className + " " + (pred[2].probability * 100).toFixed(1) + "<br>"
+*/
+                setTimeout(function() {
+                    classifyAndNext(model)
+                }, 100)
+            });
+        }
+
+        var video = document.getElementById('video');
+
+        if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+            });
+        }
+
+
+        cocoSsd.load().then(model => {
+            setTimeout(function() {
+                classifyAndNext(model)
+            }, 0)    
+        });
+    </script>
+    </body>
+</html>
